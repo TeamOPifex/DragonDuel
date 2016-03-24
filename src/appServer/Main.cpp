@@ -4,24 +4,24 @@
 #include "./OPengine.h"
 #include "Main.h"
 #include "GameState.h"
+#include "Server.h"
 
 //////////////////////////////////////
 // Application Methods
 //////////////////////////////////////
 
 void ApplicationInit() {
-	OPloadersAddDefault();
-	OPcmanInit(OPIFEX_ASSETS);
-	OPrenderInit();
-	OPgameStateChange(&GS_EXAMPLE);
+	OP_LOG_LEVEL = 999;
+	ServerStart("1337");
 }
 
-int ApplicationUpdate(OPtimer* timer) {
-	return ActiveState->Update(timer);
+OPint ApplicationUpdate(OPtimer* timer) {
+	return 0;
 }
 
 void ApplicationRender(OPfloat delta) {
-	ActiveState->Render(delta);
+  // No render for the server
+	ServerUpdate();
 }
 
 void ApplicationDestroy() {
