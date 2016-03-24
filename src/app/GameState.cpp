@@ -4,14 +4,14 @@
 
 OPvec3 bg = OPVEC3_ZERO;
 
-void Handle(GameMessage message, ui8* data) {
-	if (message == BackgroundColor) {
-		bg = *(OPvec3*)&data[1];
-	}
-}
+//void Handle(GameMessage message, ui8* data) {
+//	if (message == BackgroundColor) {
+//		bg = *(OPvec3*)&data[1];
+//	}
+//}
 
 void ExampleStateInit(OPgameState* last) {
-	MessageHandler = Handle;
+	//MessageHandler = Handle;
 	//ServerStart("1337");
 	ClientStart((i8*)last->Data, "1337", "127.0.0.1");
 }
