@@ -9,6 +9,6 @@ enum GameMessage {
 
 extern void(*MessageHandler)(GameMessage, ui8*);
 
-void ClientStart(const i8* port, const i8* serverPort, const i8* serverIP);
+void ClientStart(ui16 port, ui16 serverPort, const i8* serverIP);
 void ClientSend(GameMessage message, i8* data, ui32 length);
 void ClientUpdate();

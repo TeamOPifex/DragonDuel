@@ -11,8 +11,8 @@ struct SinglePlayer {
 
 	void Init() {
 		MessageHandler = Handle;
-		ServerStart("1337");
-		ClientStart("1338", "1337", "127.0.0.1");
+		ServerStart(1337);
+		ClientStart(1338, 1337, "127.0.0.1");
 	}
 
 	OPint Update(OPtimer* timer) {

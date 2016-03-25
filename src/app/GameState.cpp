@@ -13,7 +13,7 @@ OPvec3 bg = OPVEC3_ZERO;
 void ExampleStateInit(OPgameState* last) {
 	//MessageHandler = Handle;
 	//ServerStart("1337");
-	ClientStart((i8*)last->Data, "1337", "127.0.0.1");
+	//ClientStart((i8*)last->Data, "1337", "127.0.0.1");
 }
 
 OPint ExampleStateUpdate(OPtimer* time) {

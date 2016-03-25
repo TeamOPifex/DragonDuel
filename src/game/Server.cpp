@@ -15,7 +15,7 @@ ui8 packetIdentifier;
 
 unsigned char GetPacketIdentifier(RakNet::Packet *p);
 
-i8 ServerStart(const i8* port) {
+i8 ServerStart(ui16 port) {
 	clientID = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
 
 	server = RakNet::RakPeerInterface::GetInstance();
@@ -23,9 +23,9 @@ i8 ServerStart(const i8* port) {
 	server->SetTimeoutTime(30000, RakNet::UNASSIGNED_SYSTEM_ADDRESS);
 
 	RakNet::SocketDescriptor socketDescriptors[2];
-	socketDescriptors[0].port = atoi(port);
+	socketDescriptors[0].port = port;
 	socketDescriptors[0].socketFamily = AF_INET; // Test out IPV4
-	socketDescriptors[1].port = atoi(port);
+	socketDescriptors[1].port = port;
 	socketDescriptors[1].socketFamily = AF_INET6; // Test out IPV6
 
 

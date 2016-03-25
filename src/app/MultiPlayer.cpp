@@ -65,7 +65,7 @@ struct MultiPlayer {
 
 			if (OPimguiButton(OPvec2Create(440, 20), "Join")) {
 				connected = 1;
-				ClientStart(buffer, "1337", "127.0.0.1");
+				ClientStart(1338, 1337, buffer);
 			}
 
 			OPint state = OPimguiTextbox(OPvec2Create(20, 20), buffer, "IP Address", textActive, textTimer % 500 > 250);

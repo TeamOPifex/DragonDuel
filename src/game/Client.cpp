@@ -14,15 +14,15 @@ ui8 clientPacketIdentifier;
 unsigned char GetPacketIdentifierClient(RakNet::Packet *p);
 i8 PACKETDATA[4096];
 
-void ClientStart(const i8* port, const i8* serverPort, const i8* serverIP) {
+void ClientStart(ui16 port, ui16 serverPort, const i8* serverIP) {
 	client = RakNet::RakPeerInterface::GetInstance();
 	
-	RakNet::SocketDescriptor socketDescriptor(atoi(port), 0);
+	RakNet::SocketDescriptor socketDescriptor(port, 0);
 	socketDescriptor.socketFamily = AF_INET;
 	client->Startup(8, &socketDescriptor, 1);
 	client->SetOccasionalPing(true);
 
-	RakNet::ConnectionAttemptResult car = client->Connect(serverIP, atoi(serverPort), "Rumpelstiltskin", (int)strlen("Rumpelstiltskin"));
+	RakNet::ConnectionAttemptResult car = client->Connect(serverIP, serverPort, "Rumpelstiltskin", (int)strlen("Rumpelstiltskin"));
 	RakAssert(car == RakNet::CONNECTION_ATTEMPT_STARTED);
 
 	OPlogInfo("Client Started");
