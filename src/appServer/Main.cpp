@@ -12,16 +12,16 @@
 
 void ApplicationInit() {
 	OP_LOG_LEVEL = 999;
-	ServerStart("1337");
+	SERVER.Start(1337);
 }
 
 OPint ApplicationUpdate(OPtimer* timer) {
+	SERVER.Update(timer);
 	return 0;
 }
 
 void ApplicationRender(OPfloat delta) {
   // No render for the server
-	ServerUpdate();
 }
 
 void ApplicationDestroy() {

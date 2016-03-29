@@ -1,14 +1,25 @@
+#pragma once
+
 #include "./OPengine.h"
+#include "GameMessage.h"
 
-#include "MessageIdentifiers.h"
+#pragma comment(lib, "Ws2_32.lib")
 
-enum GameMessage {
-	GENERIC = ID_USER_PACKET_ENUM,
-	BackgroundColor
+#include "RakNetTypes.h"
+
+struct GameClient {
+	RakNet::RakPeerInterface* client;
+	RakNet::Packet* cp;
+	ui8 clientPacketIdentifier;
+	i8 Connected;
+
+	void(*MessageHandler)(GameMessage, ui8*, ui32);
+
+	i8 Start(ui16 port, ui16 serverPort, const i8* serverIP);
+	void Send(GameMessage message);
+	void Send(GameMessage message, ui8* data, ui32 length);
+	void Update(OPtimer* timer);
+	void HandleMessage(ui8* data, ui32 length);
 };
 
-extern void(*MessageHandler)(GameMessage, ui8*);
-
-void ClientStart(ui16 port, ui16 serverPort, const i8* serverIP);
-void ClientSend(GameMessage message, i8* data, ui32 length);
-void ClientUpdate();
+extern GameClient CLIENT;

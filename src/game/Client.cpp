@@ -7,22 +7,26 @@
 #include "RakSleep.h"
 #include "PacketLogger.h"
 
-RakNet::RakPeerInterface* client;
-RakNet::Packet* cp;
-ui8 clientPacketIdentifier;
-
 unsigned char GetPacketIdentifierClient(RakNet::Packet *p);
 i8 PACKETDATA[4096];
 
-void ClientStart(ui16 port, ui16 serverPort, const i8* serverIP) {
+i8 GameClient::Start(ui16 port, ui16 serverPort, const i8* serverIP) {
+	MessageHandler = NULL;
 	client = RakNet::RakPeerInterface::GetInstance();
+	Connected = 0;
 	
 	RakNet::SocketDescriptor socketDescriptor(port, 0);
 	socketDescriptor.socketFamily = AF_INET;
 	client->Startup(8, &socketDescriptor, 1);
 	client->SetOccasionalPing(true);
 
+	ui8 attempt = 1;
 	RakNet::ConnectionAttemptResult car = client->Connect(serverIP, serverPort, "Rumpelstiltskin", (int)strlen("Rumpelstiltskin"));
+	if (car == RakNet::INVALID_PARAMETER) {
+		client->Shutdown(0);
+		return 0;
+	}
+
 	RakAssert(car == RakNet::CONNECTION_ATTEMPT_STARTED);
 
 	OPlogInfo("Client Started");
@@ -35,27 +39,32 @@ void ClientStart(ui16 port, ui16 serverPort, const i8* serverIP) {
 	}
 
 	OPlogInfo("My GUID is %s", client->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS).ToString());
+
+	return 1;
 }
 
-void ClientSend(GameMessage message, i8* data, ui32 length) {
+void GameClient::Send(GameMessage message, ui8* data, ui32 length) {
 	PACKETDATA[0] = message;
 	OPmemcpy(&PACKETDATA[1], data, length);
-	client->Send(PACKETDATA, sizeof(PACKETDATA) + sizeof(i8), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+	client->Send(PACKETDATA, length + sizeof(i8), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-void(*MessageHandler)(GameMessage, ui8*) = NULL;
+void GameClient::Send(GameMessage message) {
+	PACKETDATA[0] = message;
+	client->Send(PACKETDATA, sizeof(i8), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+}
 
-void ClientHandleMessage(ui8* data) {
+void GameClient::HandleMessage(ui8* data, ui32 length) {
 	if (data == NULL) {
 		return;
 	}
 
 	if (MessageHandler) {
-		MessageHandler((GameMessage)data[0], &data[1]);
+		MessageHandler((GameMessage)data[0], &data[1], length - 1);
 	}
 }
 
-void ClientUpdate() {
+void GameClient::Update(OPtimer* timer) {
 
 	for (cp = client->Receive(); cp; client->DeallocatePacket(cp), cp = client->Receive())
 	{
@@ -89,6 +98,7 @@ void ClientUpdate() {
 			printf("We are banned from this server.\n");
 			break;
 		case ID_CONNECTION_ATTEMPT_FAILED:
+			Connected = -1;
 			printf("Connection attempt failed\n");
 			break;
 		case ID_NO_FREE_INCOMING_CONNECTIONS:
@@ -111,6 +121,7 @@ void ClientUpdate() {
 			// This tells the client they have connected
 			printf("ID_CONNECTION_REQUEST_ACCEPTED to %s with GUID %s\n", cp->systemAddress.ToString(true), cp->guid.ToString());
 			printf("My external address is %s\n", client->GetExternalID(cp->systemAddress).ToString(true));
+			Connected = 1;
 			break;
 		case ID_CONNECTED_PING:
 		case ID_UNCONNECTED_PING:
@@ -118,8 +129,9 @@ void ClientUpdate() {
 			break;
 		default:
 			// It's a client, so just show the message
-			printf("MESSAGE FROM SERVER :: %s\n", cp->data);
-			ClientHandleMessage(cp->data);
+			OPlog("MESSAGE FROM SERVER");
+
+			HandleMessage(cp->data, cp->length);
 			break;
 		}
 	}
@@ -138,3 +150,5 @@ unsigned char GetPacketIdentifierClient(RakNet::Packet *p)
 	else
 		return (unsigned char)p->data[0];
 }
+
+GameClient CLIENT;

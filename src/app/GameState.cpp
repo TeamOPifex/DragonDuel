@@ -19,10 +19,10 @@ void ExampleStateInit(OPgameState* last) {
 OPint ExampleStateUpdate(OPtimer* time) {
 	if (OPkeyboardWasPressed(OPKEY_SPACE)) {
 		OPvec3 color = OPvec3Create(0, 1, 0);
-		ClientSend(BackgroundColor, (i8*)&color, sizeof(color));
+		CLIENT.Send(BackgroundColor, (ui8*)&color, sizeof(color));
 	}
 	//ServerUpdate();
-	ClientUpdate();
+	CLIENT.Update(time);
 	return false;
 }
 

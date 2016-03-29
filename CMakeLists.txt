@@ -30,6 +30,7 @@ add_external_opifex_includes()
 
 # Application Source Files
 add_source_group(src "${PROJECT_SOURCE_DIR}/src/game" APPLICATION_GAME_SRC)
+add_source_group(src/messages "${PROJECT_SOURCE_DIR}/src/game/messages" APPLICATION_GAME_SRC)
 
 add_library(9_Game STATIC ${APPLICATION_GAME_SRC})
 
