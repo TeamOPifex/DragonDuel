@@ -11,8 +11,10 @@ struct SinglePlayer {
 	OPvec3 background = { 0.6f, 0.1f, 0.1f };
 	Game game;
 	Player* player;
+	ui8 Started;
 
 	void Init() {
+		Started = 0;
 		SERVER.Start(1337);
 		CLIENT.Start(1338, 1337, "127.0.0.1");
 		CLIENT.MessageHandler = Handle;
@@ -20,8 +22,10 @@ struct SinglePlayer {
 	}
 
 	OPint Update(OPtimer* timer) {
+		if (!Started) return 0;
+
 		if (OPkeyboardWasPressed(OPKEY_SPACE)) {
-			OPvec3 color = OPvec3Create(0, 1, 0);
+			OPvec3 color = OPvec3Create(0, 0.2, 0);
 			CLIENT.Send(BackgroundColor, (ui8*)&color, sizeof(color));
 			CLIENT.Send(CreateMatch);
 		}
@@ -62,6 +66,7 @@ void Handle(GameMessage message, ui8* data, ui32 length) {
 		case JoinMatch: {
 			JoinMatchResult* result = (JoinMatchResult*)data;
 			singlePlayer.player = singlePlayer.game.AddPlayer(result->guid);
+			singlePlayer.Started = 1;
 			OPlog("Joined a game with %d other players", result->otherPlayers);
 			break;
 		}

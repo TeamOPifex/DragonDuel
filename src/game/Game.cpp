@@ -3,16 +3,18 @@
 void Game::Init() {
 	playerCount = 0;
 
-	OPmeshBuilder* builder = OPmeshBuilderCreate(sizeof(OPfloat) * 6);
+	//OPmeshBuilder* builder = OPmeshBuilderCreate(sizeof(OPfloat) * 6);
 
-	MeshBuilderVert one = { -1, 1, 0, 1, 0, 0 };
-	MeshBuilderVert two = { 1, 1, 0, 1, 0, 0 };
-	MeshBuilderVert three = { 1, -1, 0, 1, 0, 0 };
-	MeshBuilderVert four = { -1, -1, 0, 1, 0, 0 };
-	OPmeshBuilderAdd(builder, &one, &two, &three, &four);
+	//MeshBuilderVert one = { -1, 1, 0, 1, 0, 0 };
+	//MeshBuilderVert two = { 1, 1, 0, 1, 0, 0 };
+	//MeshBuilderVert three = { 1, -1, 0, 1, 0, 0 };
+	//MeshBuilderVert four = { -1, -1, 0, 1, 0, 0 };
+	//OPmeshBuilderAdd(builder, &one, &two, &three, &four);
 
-	Mesh = OPmeshBuilderGen(builder);
-	OPmeshBuilderDestroy(builder);
+	//Mesh = OPmeshBuilderGen(builder);
+	//OPmeshBuilderDestroy(builder);
+
+ 	Mesh = *((OPmesh*)OPcmanLoadGet("spyro.opm"));
 
 	Effect = OPeffectGen(
 		"ColoredModel.vert",
@@ -22,7 +24,7 @@ void Game::Init() {
 		Mesh.vertexLayout.stride);
 
 	Camera = OPcamPersp(
-		OPvec3Create(0, 10, 10),
+		OPvec3Create(0, 50, 50),
 		OPVEC3_UP,
 		OPVEC3_UP,
 		0.1f,

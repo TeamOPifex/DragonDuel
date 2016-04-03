@@ -5,30 +5,32 @@
 
 struct Player {
 	OPvec3 Position;
+	OPvec3 PrevPosition;
 	RakNet::RakNetGUID guid;
 
 	void Update(OPtimer* timer) {
 	}
 
 	void UpdateInput(OPtimer* timer) {
-		if (OPkeyboardWasPressed(OPKEY_A)) {
-			Position.x -= 1;
+		PrevPosition = Position;
+		if (OPkeyboardIsDown(OPKEY_A)) {
+			Position.x -= 0.1 * timer->Elapsed;
 			Position.y = 0;
 
 			CLIENT.Send(PositionUpdate, (ui8*)this, sizeof(Player));
 		}
-		if (OPkeyboardWasPressed(OPKEY_D)) {
-			Position.x += 1;
+		if (OPkeyboardIsDown(OPKEY_D)) {
+			Position.x += 0.1 * timer->Elapsed;
 			Position.y = 0;
 			CLIENT.Send(PositionUpdate, (ui8*)this, sizeof(Player));
 		}
-		if (OPkeyboardWasPressed(OPKEY_W)) {
-			Position.z -= 1;
+		if (OPkeyboardIsDown(OPKEY_W)) {
+			Position.z -= 0.1 * timer->Elapsed;
 			Position.y = 0;
 			CLIENT.Send(PositionUpdate, (ui8*)this, sizeof(Player));
 		}
-		if (OPkeyboardWasPressed(OPKEY_S)) {
-			Position.z += 1;
+		if (OPkeyboardIsDown(OPKEY_S)) {
+			Position.z += 0.1 * timer->Elapsed;
 			Position.y = 0;
 			CLIENT.Send(PositionUpdate, (ui8*)this, sizeof(Player));
 		}
@@ -74,8 +76,11 @@ struct Game {
 	}
 
 	void Render(OPfloat delta) {
+		OPrenderCull(0);
+		OPrenderDepth(1);
 		for (ui8 i = 0; i < playerCount; i++) {
-			OPmat4 world = OPmat4Translate(players[i].Position);
+			OPmat4 world = OPmat4RotY(OPpi_2 + (2 * i * OPpi_2));
+			world.Translate(OPvec3Tween(players[i].PrevPosition, players[i].Position, delta));
 			OPbindMeshEffectWorldCam(&Mesh, &Effect, &world, &Camera);
 			OPmeshRender();
 		}

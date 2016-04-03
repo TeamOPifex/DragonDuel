@@ -211,12 +211,13 @@ void MultiHandle(GameMessage message, ui8* data, ui32 length
 		case JoinMatch: {
 			OPlog("JoinMatch");
 			JoinMatchResult* result = (JoinMatchResult*)data;
-			multiPlayer.player = multiPlayer.game.AddPlayer(result->guid);
 
 			for (ui32 i = 0; i < result->otherPlayers; i++) {
 				Player* player = multiPlayer.game.AddPlayer(result->players[i].guid);
 				player->Position = result->players[i].Position;
 			}
+
+			multiPlayer.player = multiPlayer.game.AddPlayer(result->guid);
 
 			OPlog("Joined a game with %d other players", result->otherPlayers);
 			
